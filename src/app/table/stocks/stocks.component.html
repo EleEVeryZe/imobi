@@ -1,0 +1,27 @@
+<table class="beautiful-table">
+    <thead>
+        <tr>
+            <td>Price</td>
+            <td>Qtd</td>
+            <td>Total</td>
+            <td>Descr</td>
+            <td>Bought Date</td>
+            <td>Prev. Price</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let registro of registros; trackby: trackStock">
+            <td class="price" [ngClass]="{ 'positive': !registro.isPriceCheaper,  'negative': registro.isPriceCheaper }"> {{registro.unitPrice}}</td>
+            <td>{{registro.unitQtd}}</td>
+            <td [class.positive]="!registro.isPriceCheaper" [class.negative]="registro.isPriceCheaper">{{registro.unitTotal}}</td>
+            <td>{{registro.unitDescription}}</td>
+            <td>{{registro.boughtDate}}</td>
+            <td>{{registro.previousUnitPrice}}</td>
+            <td *ngIf="registro.isPriceCheaper"><button (click)="sell(registro.id)">Sell</button></td>
+        </tr>
+    </tbody>
+</table>
+
+<p>Keep up with the good work, </p><input type="text" [(ngModel)]="name.name" (ngModelChange)="nameChanged()"/>
+
+<ng-content></ng-content>
