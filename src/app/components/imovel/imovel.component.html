@@ -1,0 +1,9 @@
+<div>
+    <div class="fotos imgContainer">
+        <img *ngFor="let img of imovel.imagens" [src]="img" alt="" class="img">
+    </div>
+    <div class="descricao">
+        <span>{{ imovel.descricao }}</span>
+        <span>{{ imovel.valor }}</span>
+    </div>
+</div>

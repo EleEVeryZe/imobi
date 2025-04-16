@@ -1,16 +1,6 @@
 <main class="main">
   <div class="content">
-    <h2>Please, tell us your name ? </h2>
-    <input  type="text" [(ngModel)]="name.name" (ngModelChange)="changeNamePlease($event)"/>
-
-    <h2>Please, tell us your last name</h2>
-    <input type="text" [(ngModel)]="lastName" />
-
-    <app-stocks [name]="name" (nameChangedFn)="nameChanged($event)">
-      <app-result />
-      <app-result />
-      <app-result />
-    </app-stocks>
+      <app-main-grid />
   </div>
 </main>
 <router-outlet />

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { StocksComponent } from './stocks.component';
+import { MainGridComponent } from './main-grid.component';
 
-describe('StocksComponent', () => {
-  let component: StocksComponent;
-  let fixture: ComponentFixture<StocksComponent>;
+describe('MainGridComponent', () => {
+  let component: MainGridComponent;
+  let fixture: ComponentFixture<MainGridComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [StocksComponent]
+      imports: [MainGridComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(StocksComponent);
+    fixture = TestBed.createComponent(MainGridComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
