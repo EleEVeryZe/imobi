@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Imovel } from '../model/imovel.model';
+import { Endereco, Imovel } from '../model/imovel.model';
 
 @Injectable({
   providedIn: 'root'
@@ -9,14 +9,25 @@ export class ImovelRepositoryService {
   constructor() { }
 
   getAll() : Imovel[] {
-    return all as unknown as Imovel[];
+    return all.map(imovel => this.rehydrateObj(imovel));
+  }
+
+  get(id: string) : Imovel {
+    return all
+      .map(imovel => this.rehydrateObj(imovel))
+      .filter(item => item.id === id).pop();
+  }
+
+  rehydrateObj(imovel: any) {
+    let obj = Object.assign(new Imovel(), imovel);
+    obj.endereco = Object.assign(new Endereco(), imovel.endereco)
+    return obj;
   }
 }
 
-
 const all = [
   {
-    "id": "1",
+    "id": "00001",
     "descricao": "Casa com piscina e quintal",
     "operacao": "COMPRAR",
     "tipoImovel": "CASA",
@@ -45,7 +56,7 @@ const all = [
     "observacoes": "Casa bem arejada, ótima localização"
   },
   {
-    "id": "2",
+    "id": "00002",
     "descricao": "Apartamento moderno no centro",
     "operacao": "ALUGAR",
     "tipoImovel": "APARTAMENTO",
@@ -72,7 +83,7 @@ const all = [
     "possuiQuintal": false
   },
   {
-    "id": "3",
+    "id": "00003",
     "descricao": "Cobertura com vista panorâmica",
     "operacao": "COMPRAR",
     "tipoImovel": "COBERTURA",
@@ -101,9 +112,9 @@ const all = [
     "observacoes": "Cobertura de luxo com elevador privativo"
   },
   {
-    "id": "4",
+    "id": "00004",
     "descricao": "Casa de veraneio",
-    "operacao": "TEMPORADA",
+    "operacao": "ALUGAR",
     "tipoImovel": "CASA",
     "qtdQuartos": 3,
     "valor": 500,
@@ -128,9 +139,9 @@ const all = [
     "possuiQuintal": true
   },
   {
-    "id": "5",
+    "id": "0005",
     "descricao": "Apartamento em leilão",
-    "operacao": "LEILÃO",
+    "operacao": "Imovel Novo",
     "tipoImovel": "APARTAMENTO",
     "qtdQuartos": 2,
     "valor": 180000,

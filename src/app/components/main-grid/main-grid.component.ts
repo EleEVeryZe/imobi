@@ -1,23 +1,25 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { Imovel } from '../../model/imovel.model';
+import { Component } from '@angular/core';
+import { Filtro, Imovel } from '../../model/imovel.model';
 import { ImovelService } from '../../services/imovel.service';
+import { ScrollService } from '../../services/scroll.service';
+import { FilterComponent } from '../filter/filter.component';
 import { ImovelComponent } from '../imovel/imovel.component';
 
 @Component({
   selector: 'app-main-grid',
-  imports: [CommonModule, ImovelComponent],
+  imports: [CommonModule, ImovelComponent, FilterComponent],
   templateUrl: './main-grid.component.html',
   styleUrl: './main-grid.component.scss'
 })
-export class MainGridComponent implements OnInit {
+export class MainGridComponent {
   imoveis!: Imovel[];
   
-  constructor(imovelService: ImovelService) {
+  constructor(private readonly imovelService: ImovelService, private readonly scrollService: ScrollService) {
       this.imoveis = imovelService.getAll();
-   }
-  
-  ngOnInit(): void {
-    
+  }
+
+  handleFiltrar(filtro: Filtro) {
+    this.imoveis = this.imovelService.filterBy(filtro);
   }
 }

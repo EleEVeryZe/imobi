@@ -1,0 +1,1 @@
+export type DRAWER_ICON = "SANDWISH" | "BACK"

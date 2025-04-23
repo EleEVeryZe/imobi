@@ -1,14 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
-import { MainGridComponent } from './components/main-grid/main-grid.component';
+import { SidenavComponent } from './components/sidenav/sidenav.component';
+import { ImovelService } from './services/imovel.service';
+
+
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, FormsModule, RouterOutlet, MainGridComponent],
+  imports: [CommonModule, FormsModule, SidenavComponent,  RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  providers: [ImovelService]
+
 })
 export class AppComponent {
 }
