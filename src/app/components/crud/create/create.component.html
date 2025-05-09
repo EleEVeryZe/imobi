@@ -1,0 +1,104 @@
+<form [formGroup]="createImovel" (ngSubmit)="create()">
+  <h2>Informações do Imóvel</h2>
+  <!-- <input name="id" placeholder="ID" required /> -->
+
+  <div class="d-flex">
+    <mat-form-field class="mr-1">
+      <mat-label>Operação</mat-label>
+      <mat-select formControlName="operacao">
+        <mat-option value="COMPRAR">Comprar</mat-option>
+        <mat-option value="ALUGAR">Alugar</mat-option>
+        <mat-option value="Imovel Novo">Imóvel Novo</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="full-width mt-1">
+      <mat-label>Tipo do Imóvel</mat-label>
+      <mat-select formControlName="tipo">
+        <ng-container *ngIf="tipoImoveis?.length">
+          <mat-option
+            *ngFor="let tipoImovel of tipoImoveis"
+            [value]="tipoImovel"
+            >{{ tipoImovel }}</mat-option
+          >
+        </ng-container>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="d-flex">
+    <mat-form-field class="mr-1">
+      <mat-label>Qtd de Quartos</mat-label>
+      <input matInput type="number" formControlName="qtdQuartos" />
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+      <mat-label>Valor</mat-label>
+      <input matInput formControlName="valor" mask="separator.2" thousandSeparator="." decimalMarker="," prefix="R$ "/>
+    </mat-form-field>
+  </div>
+
+  <div class="d-flex">
+    <mat-form-field class="mr-1">
+      <mat-label>Valor do Condimínio</mat-label>
+      <input matInput formControlName="valorCondominio" mask="separator.2" thousandSeparator="." decimalMarker="," prefix="R$ "/>
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+      <mat-label>Valor do IPTU</mat-label>
+      <input matInput formControlName="valorIPTU" mask="separator.2" thousandSeparator="." decimalMarker="," prefix="R$ "/>
+    </mat-form-field>
+  </div>
+  <!--
+  <h3>Endereço</h3>
+  <input name="rua" placeholder="Rua" />
+  <input name="numero" placeholder="Número" />
+  <input name="bairro" placeholder="Bairro" />
+  <input name="cidade" placeholder="Cidade" />
+  <input name="estado" placeholder="Estado" />
+  <input name="cep" placeholder="CEP" />
+
+  <h3>Características</h3>
+  <input type="number" name="areaTotalM2" placeholder="Área Total (m²)" />
+  <input
+    type="number"
+    name="areaConstruidaM2"
+    placeholder="Área Construída (m²)"
+  />
+  <input type="number" name="quantidadeQuartos" placeholder="Quartos" />
+  <input type="number" name="quantidadeBanheiros" placeholder="Banheiros" />
+  <input type="number" name="quantidadeSuites" placeholder="Suítes" />
+  <input type="number" name="vagasGaragem" placeholder="Vagas de Garagem" />
+  <input type="date" name="dataCadastro" placeholder="Data de Cadastro" />
+
+  <h3>Extras</h3>
+  <label> <input type="checkbox" name="possuiPiscina" /> Piscina </label>
+  <label> <input type="checkbox" name="possuiQuintal" /> Quintal </label>
+
+  <textarea name="observacoes" placeholder="Observações"></textarea>
+
+  <h3>Imagens</h3>
+  <input
+    type="text"
+    name="imagens"
+    placeholder="URLs das imagens separadas por vírgula"
+  />
+
+  <button type="submit">Salvar</button>
+  -->
+
+  <form class="example-form">
+    <mat-form-field class="example-full-width">
+      <mat-label>Observações</mat-label>
+      <textarea
+        matInput
+        formControlName="observacoes"
+        [errorStateMatcher]="matcher"
+        placeholder="Ex. Cobertura de luxo com elevador privativo"
+      ></textarea>
+      @if (createImovel.hasError('required')) {
+      <mat-error>É necessário preencher a descrição</mat-error>
+      }
+    </mat-form-field>
+  </form>
+</form>
