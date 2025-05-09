@@ -27,4 +27,4 @@ jobs:
 
       - name: Sync next files to S3
         run: |
-          aws s3 sync ./dist/stock-marquetim/browser s3://asdfimobiliaria/ --delete
+          aws s3 sync ./dist/stock-marquetim/browser s3://asdfimobiliaria/ --delete --exclude "resource/*" --exclude "resource"

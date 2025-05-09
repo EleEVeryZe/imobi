@@ -7,8 +7,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { Endereco, Filtro } from '../../model/imovel.model';
-import { ImovelService } from '../../services/imovel.service';
+import { Endereco, Filtro } from '../../../model/imovel.model';
+import { ImovelService } from '../../../services/imovel.service';
 
 @Component({
   selector: 'app-filter',
@@ -24,7 +24,10 @@ export class FilterComponent {
   @Output() handleFiltrar!: EventEmitter<Filtro>;
 
   constructor(imovelService: ImovelService) {
-    this.enderecos = imovelService.getAllEnderecos();
+    imovelService.getAllEnderecos().subscribe((endereco) => {
+      this.enderecos = endereco;
+    });
+    
     this.tipoImoveis = imovelService.getTipoImoveis();
     this.handleFiltrar = new EventEmitter<Filtro>();
   }
