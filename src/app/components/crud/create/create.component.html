@@ -1,4 +1,4 @@
-<form [formGroup]="createImovel" (ngSubmit)="create()">
+<form [formGroup]="createImovel" (ngSubmit)="create()" enctype="multipart/form-data">
   <mat-tab-group [(selectedIndex)]="selectedTabIndex">
     <mat-tab label="Dados">
       <h2>Informações do Imóvel</h2>
@@ -149,7 +149,11 @@
             <label for="fileInput" class="custom-file-upload ft-size"><mat-icon class="photo-icon">photo_camera</mat-icon></label>
             <input mat-fab type="file" id="fileInput" class="custom-file-upload" (change)="onFileSelected($event)" multiple />
           </div>
-          <img *ngFor="let foto of previewUrls" [src]="foto" alt="ft" class="ft-size mb-1" />
+          <div *ngFor="let foto of previewUrls" class="mb-1 photo-container">
+            <mat-icon class="close-icon" (click)="remove(foto.fileName)" >close</mat-icon>
+            <img [src]="foto.url" alt="ft" class="ft-size" />
+          </div>
+          
         </div>
       </div>
     </mat-tab>

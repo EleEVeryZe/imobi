@@ -1,3 +1,5 @@
+import { IS_PROD } from '../util/constants';
+
 export type TipoDeNegocio = 'ALUGAR' | 'COMPRAR' | 'TEMPORADA' | 'NOVOS' | 'LEILÃO';
 export type TipoImovel =
   | 'CASA'
@@ -48,6 +50,7 @@ export interface Filtro {
 
 export interface IImovel {
   id?: string;
+  tipo: string;
   descricao: string;
   operacao: TipoDeNegocio;
   tipoImovel: TipoImovel;
@@ -90,16 +93,20 @@ export class Imovel {
   possuiPiscina?: boolean;
   possuiQuintal?: boolean;
   observacoes?: string;
+  imagensComDominio?: string;
 
   capFirstLetterTipoDeNegocio() {
     return String(this.operacao).charAt(0).toUpperCase() + String(this.operacao).slice(1).toLowerCase();
   }
 
   getValorFormatado() {
-    return 'R$' + this.valor.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return 'R$' + this.valor?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
 
   static parsePlainObjectIntoImovel({
+    id,
+    tipo,
+    imagens,
     operacao,
     tipoImovel,
     descricao,
@@ -124,7 +131,10 @@ export class Imovel {
     observacoes,
   }: any): IImovel {
     return {
+      id,
+      tipo,
       operacao,
+      imagens,
       tipoImovel,
       descricao,
       qtdQuartos,
@@ -142,5 +152,72 @@ export class Imovel {
       possuiQuintal,
       observacoes,
     };
+  }
+
+  static parseImovelIntoPlainObject({
+    id,
+    tipo,
+    operacao,
+    imagens,
+    tipoImovel,
+    descricao,
+    qtdQuartos,
+    valor,
+    valorCondominio,
+    valorIPTU,
+    endereco: { rua, numero, bairro, cidade, estado, cep },
+    areaTotalM2,
+    areaConstruidaM2,
+    quantidadeBanheiros,
+    quantidadeSuites,
+    vagasGaragem,
+    dataCadastro,
+    possuiPiscina,
+    possuiQuintal,
+    observacoes,
+  }: any): any {
+    return {
+      id,
+      tipo,
+      imagens,
+      operacao,
+      tipoImovel,
+      descricao,
+      qtdQuartos,
+      valor,
+      valorCondominio,
+      valorIPTU,
+      rua,
+      numero,
+      bairro,
+      cidade,
+      estado,
+      cep,
+      areaTotalM2,
+      areaConstruidaM2,
+      quantidadeBanheiros,
+      quantidadeSuites,
+      vagasGaragem,
+      dataCadastro,
+      possuiPiscina,
+      possuiQuintal,
+      observacoes,
+    };
+  }
+
+  static rehydrateObj(imovel: any) {
+    let obj = Object.assign(new Imovel(), imovel);
+
+    if (!IS_PROD)
+      obj.imagensComDominio = (obj.imagens ?? obj.images)?.map((img: string) => 'http://asdfimobiliaria.s3-website-sa-east-1.amazonaws.com/' + img);
+
+    obj.endereco = Object.assign(new Endereco(), imovel.endereco);
+    return obj;
+  }
+
+  static removeDomainFromImgUrl = (imgWithDomain: string) => imgWithDomain.replace('http://asdfimobiliaria.s3-website-sa-east-1.amazonaws.com/', '');
+
+  static isImgStoredOnS3(imgUrl: String) {
+    return imgUrl.indexOf("resource/img/") !== -1
   }
 }

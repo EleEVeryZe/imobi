@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormGroupDirective, NgForm, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
+import { Router } from '@angular/router';
 import dayjs from 'dayjs';
 import { NgxMaskDirective } from 'ngx-mask';
 import { Imovel } from '../../../model/imovel.model';
@@ -38,15 +39,15 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
     NgxMaskDirective,
     MatCheckboxModule,
     MatTabsModule,
-    MatIconModule
+    MatIconModule,
   ],
   templateUrl: './create.component.html',
   styleUrl: './create.component.scss',
 })
-export class CreateComponent {
+export class CreateComponent implements OnInit {
   formData!: FormData;
   imagensFiles = [] as File[];
-  previewUrls: string[] = [];
+  previewUrls: {url: string, fileName: string }[] = [];
   matcher = new MyErrorStateMatcher();
   tipoImoveis!: string[];
   selectedTabIndex!: number;
@@ -81,12 +82,28 @@ export class CreateComponent {
 
     observacoes: new FormControl<string | null>(''),
   });
-
-  constructor(imovelService: ImovelService, httpClient: HttpClient) {
+  router!: Router;
+  isEdit = false;
+  constructor(imovelService: ImovelService, httpClient: HttpClient, router: Router) {
     this.tipoImoveis = imovelService.getTipoImoveis();
     this.formData = new FormData();
     this.httpClient = httpClient;
-    imovelService.getAll();
+    this.router = router;
+  }
+
+  getImovelFromPageState() {
+    const navigation = this.router.getCurrentNavigation();
+    return navigation?.extras?.state?.['imovel'] ?? history.state['imovel'];
+  }
+
+  ngOnInit(): void {
+    const imovel = this.getImovelFromPageState();
+    console.log(imovel)
+    if (imovel) {
+      this.isEdit = true;
+      this.previewUrls = imovel.imagensComDominio.map((url: string) => ({ url, fileName: url }));
+      this.createImovel.patchValue(Imovel.parseImovelIntoPlainObject(imovel));
+    }
   }
 
   create() {
@@ -94,9 +111,39 @@ export class CreateComponent {
       alert('Formulário com campos inválidos');
       return;
     }
+
     this.imagensFiles.forEach((img, idx) => this.formData.append('file' + idx, img));
-    this.formData.append('formData', JSON.stringify(Imovel.parsePlainObjectIntoImovel(this.createImovel.value)));
-    return this.httpClient.post('https://rn5pjlgu8k.execute-api.sa-east-1.amazonaws.com/imovel', this.formData).subscribe(console.log); //https://rn5pjlgu8k.execute-api.sa-east-1.amazonaws.com/imovel
+
+    if (this.isEdit) {
+      const imovel = this.getImovelFromPageState();
+      this.formData.append(
+        'formData',
+        JSON.stringify(
+          Imovel.parsePlainObjectIntoImovel({
+            id: imovel.id,
+            ...this.createImovel.value,
+            imagens: this.previewUrls
+              .filter(({ url }) => url.indexOf('blob') === -1)
+              .map(({ url }) => url.replace('http://asdfimobiliaria.s3-website-sa-east-1.amazonaws.com/', '')),
+          })
+        )
+      );
+      this.httpClient
+        .post('https://rn5pjlgu8k.execute-api.sa-east-1.amazonaws.com/imovel?id=' + imovel.id, this.formData)
+        .subscribe(console.log); //https://rn5pjlgu8k.execute-api.sa-east-1.amazonaws.com/imovel
+    } else {
+      this.formData.append(
+        'formData',
+        JSON.stringify(
+          Imovel.parsePlainObjectIntoImovel({
+            ...this.createImovel.value,
+            imagens: this.previewUrls.filter(({ url }) => url.indexOf('blob') === -1).map(({ url }) => url),
+          })
+        )
+      );
+      this.httpClient.post('https://rn5pjlgu8k.execute-api.sa-east-1.amazonaws.com/imovel', this.formData).subscribe(console.log); //https://rn5pjlgu8k.execute-api.sa-east-1.amazonaws.com/imovel
+    }
+    this.formData = new FormData();
   }
 
   onFileSelected(event: any) {
@@ -104,8 +151,24 @@ export class CreateComponent {
       const files = Array.from(event.target.files);
       files.forEach((file: any) => {
         this.imagensFiles.push(file);
-        this.previewUrls.push(URL.createObjectURL(file));
+        this.previewUrls.push({ url: URL.createObjectURL(file), fileName: file.name + file.lastModified });
       });
     }
+  }
+
+  remove(fileNameToRemove: string) {
+    const removeFromUi = () => {
+      const fileToRemove = this.previewUrls.find(({ fileName }) => fileName == fileNameToRemove);
+      this.previewUrls = this.previewUrls.filter(({ fileName }) => fileName !== fileNameToRemove);
+      this.imagensFiles = this.imagensFiles.filter((file: File) => file.name + file.lastModified == fileToRemove?.fileName);
+    };
+
+    if (Imovel.isImgStoredOnS3(fileNameToRemove)) {
+      const imovel = this.getImovelFromPageState();
+      this.httpClient
+        .delete('https://geqdeiw727.execute-api.sa-east-1.amazonaws.com/default/alteraimovel?id=' + imovel.id + "&img=" + Imovel.removeDomainFromImgUrl(fileNameToRemove))
+        .subscribe(removeFromUi);
+    } else 
+      removeFromUi();
   }
 }

@@ -31,21 +31,21 @@ export class ImovelComponent {
 
   next() {
     const hasImage =
-      this.imovel.imagens?.length &&
-      this.currentIndex < this.imovel.imagens.length - 1;
+      this.imovel.imagensComDominio?.length &&
+      this.currentIndex < this.imovel.imagensComDominio.length - 1;
     if (hasImage) this.currentIndex++;
   }
 
   checkIfDisabled() {
-    if (!this.imovel.imagens?.length)
+    if (!this.imovel.imagensComDominio?.length)
       return true;
-    return this.currentIndex === this.imovel.imagens.length - 1;
+    return this.currentIndex === this.imovel.imagensComDominio.length - 1;
   }
 
   getCurrentImg() {
-    const hasImage = this.imovel.imagens?.length && this.imovel.imagens.length >= this.currentIndex - 1;
+    const hasImage = this.imovel.imagensComDominio?.length && this.imovel.imagensComDominio.length >= this.currentIndex - 1;
     if (hasImage)
-      return this.imovel.imagens?.length && this.imovel.imagens[this.currentIndex];
+      return this.imovel.imagensComDominio?.length && this.imovel.imagensComDominio[this.currentIndex];
     return "no-img.png"; //TODO: add a global constant for this
   }
 }
